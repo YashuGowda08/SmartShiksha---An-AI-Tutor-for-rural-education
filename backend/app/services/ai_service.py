@@ -291,46 +291,66 @@ Respond in {language}."""
     ])
 
     chain = prompt | llm
-    response = await chain.ainvoke({
-        "student_class": student_class,
-        "subject": subject,
-        "chapter": chapter,
-        "topic": topic,
-        "language": language,
-    })
-
-    content = response.content.strip()
+    import asyncio
+    import json
+    import re
     
-    # Clean up any potential markdown code blocks
-    if "```json" in content:
-        content = content.split("```json")[1].split("```")[0].strip()
-    elif "```" in content:
-        content = content.split("```")[1].split("```")[0].strip()
+    max_retries = 3
+    retry_delay = 2
+    last_error = None
     
-    # If the response is still wrapped in braces but has extra text
-    if not (content.startswith("{") and content.endswith("}")):
-        import re
-        json_match = re.search(r'\{.*\}', content, re.DOTALL)
-        if json_match:
-            content = json_match.group(0)
+    for attempt in range(max_retries):
+        try:
+            response = await chain.ainvoke({
+                "student_class": student_class,
+                "subject": subject,
+                "chapter": chapter,
+                "topic": topic,
+                "language": language,
+            })
 
-    try:
-        import json
-        parsed = json.loads(content)
-        # Ensure we don't return placeholders even if parsed partially
-        if not parsed.get("explanation") or parsed.get("explanation") == "Detailed content coming soon...":
-            parsed["explanation"] = content # Fallback to raw content if parsed explanation is empty
-        if not parsed.get("examples") or "coming soon" in parsed.get("examples", "").lower():
-             # If examples are still missing in JSON, we can't do much but we should avoid the hardcoded string
-             # that triggers infinite retries if not careful
-             pass
-        return parsed
-    except Exception as e:
-        print(f"[AI-SERVICE] JSON Parse Error: {e}")
-        return {
-            "explanation": content if content else "Detailed content coming soon...",
-            "examples": "No examples could be generated at this moment. Please try again."
-        }
+            content = response.content.strip()
+            
+            # Clean up formatting noise
+            if "```json" in content:
+                content = content.split("```json")[1].split("```")[0].strip()
+            elif "```" in content:
+                content = content.split("```")[1].split("```")[0].strip()
+            
+            # Extract JSON if extra text exists
+            if not (content.startswith("{") and content.endswith("}")):
+                json_match = re.search(r'\{.*\}', content, re.DOTALL)
+                if json_match:
+                    content = json_match.group(0)
+
+            parsed = json.loads(content)
+            
+            # Crucial check: make sure we didn't get "coming soon" in the JSON itself
+            expl = parsed.get("explanation", "")
+            exs = parsed.get("examples", "")
+            
+            if "coming soon" in expl.lower() or "coming soon" in exs.lower():
+                raise ValueError("AI returned placeholder content")
+                
+            return parsed
+            
+        except Exception as e:
+            last_error = str(e)
+            print(f"[AI-CONTENT] Attempt {attempt+1} failed: {e}")
+            if "429" in str(e): # Rate limit
+                await asyncio.sleep(retry_delay)
+                retry_delay *= 2
+                continue
+            # For other errors (JSON parse, placeholders), wait briefly and retry
+            await asyncio.sleep(1)
+            continue
+            
+    # Final fallback if all retries fail
+    print(f"[AI-CONTENT] All attempts failed for topic {topic}. Final error: {last_error}")
+    return {
+        "explanation": "Content generation is currently under heavy load. Please refresh the page in a moment to try again.",
+        "examples": "Examples are being prepared. Please refresh the page in a moment."
+    }
 
 
 async def explain_textbook_paragraph(

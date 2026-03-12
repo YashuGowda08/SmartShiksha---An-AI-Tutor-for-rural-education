@@ -143,9 +143,10 @@ async def get_topic(topic_id: str, language: str = "English"):
     chapter = await chapters_collection.find_one({"_id": ObjectId(topic["chapter_id"])})
     subject = await subjects_collection.find_one({"_id": ObjectId(chapter["subject_id"])})
 
-    # If explanation OR examples are missing, generate them dynamically
+    # If explanation OR examples are missing/placeholders, generate them dynamically
     if (not topic.get("explanation") or topic.get("explanation") == "Detailed content coming soon..." or 
-        not topic.get("examples") or topic.get("examples") == "Example problems coming soon..."):
+        not topic.get("examples") or topic.get("examples") == "Example problems coming soon..." or
+        "no examples could be generated" in topic.get("examples", "").lower()):
         print(f"[CONTENT] Generating missing content for topic: {topic.get('name')}")
         content = await generate_topic_content(
             student_class=chapter.get("student_class", "10"),
