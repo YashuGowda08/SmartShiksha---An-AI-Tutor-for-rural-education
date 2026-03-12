@@ -10,7 +10,7 @@ sys.path.append(os.getcwd())
 from app.routers.mock_tests import rebuild_test_with_ai
 
 async def trigger_sync():
-    client = AsyncIOMotorClient('mongodb+srv://SmartShiksha_db_user:6W7wA5MeTpfOUCMq@cluster0.iqkfuvn.mongodb.net/')
+    client = AsyncIOMotorClient('MANGODB URI')
     db = client.smart_shiksha
     
     ids = ["69b2c943a3db42e8c011bcda", "69b2c944a3db42e8c011bd35"]
