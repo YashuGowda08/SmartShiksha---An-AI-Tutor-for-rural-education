@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { adminAPI, textbookAPI } from "@/lib/api";
+import { adminAPI, textbookAPI, authAPI } from "@/lib/api";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Users, Activity, FileText, BarChart3, Upload, TrendingDown,
@@ -22,39 +22,53 @@ interface AdminData {
 }
 
 export default function AdminPage() {
-  const { getToken } = useAuth();
+  const { getToken, isLoaded } = useAuth();
   const { t } = useLanguage();
   const [stats, setStats] = useState<AdminData | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const checkRoleAndFetchStats = async () => {
+      if (!isLoaded) return;
       try {
         const token = await getToken();
         if (token) {
+          // Verify role
+          const userRes = await authAPI.getMe(token);
+          const user = userRes.data.data;
+          if (user.role !== "admin") {
+            setIsAdmin(false);
+            return;
+          }
+          setIsAdmin(true);
           const res = await adminAPI.getStats(token);
           setStats(res.data);
         }
-      } catch {
-        setStats({
-          total_students: 1247,
-          active_users_today: 89,
-          total_tests_taken: 3456,
-          average_platform_score: 68.5,
-          class_distribution: { "Class 8": 180, "Class 9": 220, "Class 10": 350, "Class 11": 280, "Class 12": 217 },
-          most_difficult_topics: [
-            { test: "Trigonometric Identities", subject: "Mathematics", avg_score: 42 },
-            { test: "Chemical Bonding", subject: "Chemistry", avg_score: 48 },
-            { test: "Electromagnetic Induction", subject: "Physics", avg_score: 51 },
-          ],
-        });
+      } catch (err) {
+        console.error("Admin access error", err);
+        // Fallback for demo if verified admin
+        if (isAdmin === true) {
+          setStats({
+            total_students: 1247,
+            active_users_today: 89,
+            total_tests_taken: 3456,
+            average_platform_score: 68.5,
+            class_distribution: { "Class 8": 180, "Class 9": 220, "Class 10": 350, "Class 11": 280, "Class 12": 217 },
+            most_difficult_topics: [
+              { test: "Trigonometric Identities", subject: "Mathematics", avg_score: 42 },
+              { test: "Chemical Bonding", subject: "Chemistry", avg_score: 48 },
+              { test: "Electromagnetic Induction", subject: "Physics", avg_score: 51 },
+            ],
+          });
+        }
       } finally {
         setLoading(false);
       }
     };
-    fetchStats();
-  }, [getToken]);
+    checkRoleAndFetchStats();
+  }, [getToken, isLoaded, isAdmin]);
 
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -105,10 +119,30 @@ export default function AdminPage() {
     }
   };
 
-  if (loading) {
+  if (loading || isAdmin === null) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (isAdmin === false) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
+        <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mb-6">
+          <ShieldCheck className="w-10 h-10 text-red-600" />
+        </div>
+        <h2 className="text-2xl font-bold mb-2">Restricted Access</h2>
+        <p className="text-slate-500 mb-8 max-w-md">
+          This dashboard is reserved for administrators only. Please contact the platform owner if you believe you should have access.
+        </p>
+        <button 
+          onClick={() => window.location.href = "/dashboard"}
+          className="btn-primary"
+        >
+          Return to Dashboard
+        </button>
       </div>
     );
   }

@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     AWS_ACCESS_KEY: str = ""
     AWS_SECRET_KEY: str = ""
     AWS_REGION: str = "ap-south-1"
+    ADMIN_EMAIL: str = "yashugowda8102005@gmail.com"
 
     # CORS
     ALLOWED_ORIGINS: str = "http://localhost:3000,https://smart-shiksha.vercel.app"

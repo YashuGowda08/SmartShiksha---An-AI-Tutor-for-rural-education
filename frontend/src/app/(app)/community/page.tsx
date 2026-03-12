@@ -6,7 +6,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { 
   MessageSquare, Image as ImageIcon, Send, User, 
   Clock, MessageCircle, ChevronDown, ChevronUp, AlertCircle,
-  X, Paperclip, MoreHorizontal, Reply as ReplyIcon
+  X, Paperclip, MoreHorizontal, Reply as ReplyIcon, Trash2
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -231,9 +231,24 @@ export default function CommunityPage() {
       ) : (
         <div className="space-y-6">
           {posts.map((post) => (
-            <PostCard key={post.id} post={post} onToggleReplies={() => toggleReplies(post)} onReplyAdded={(reply) => {
-              setPosts(posts.map(p => p.id === post.id ? { ...p, replies: [...(p.replies || []), reply], replies_count: p.replies_count + 1 } : p));
-            }} />
+            <PostCard 
+              key={post.id} 
+              post={post} 
+              onToggleReplies={() => toggleReplies(post)} 
+              onReplyAdded={(reply) => {
+                setPosts(posts.map(p => p.id === post.id ? { ...p, replies: [...(p.replies || []), reply], replies_count: p.replies_count + 1 } : p));
+              }}
+              onDeletePost={(postId) => {
+                setPosts(posts.filter(p => p.id !== postId));
+              }}
+              onDeleteReply={(postId, replyId) => {
+                setPosts(posts.map(p => p.id === postId ? { 
+                  ...p, 
+                  replies: p.replies?.filter(r => r.id !== replyId),
+                  replies_count: Math.max(0, p.replies_count - 1)
+                } : p));
+              }}
+            />
           ))}
           
           <div className="text-center pt-8">
@@ -245,8 +260,16 @@ export default function CommunityPage() {
   );
 }
 
-function PostCard({ post, onToggleReplies, onReplyAdded }: { post: Post, onToggleReplies: () => void, onReplyAdded: (r: Reply) => void }) {
-  const { getToken } = useAuth();
+function PostCard({ 
+  post, onToggleReplies, onReplyAdded, onDeletePost, onDeleteReply 
+}: { 
+  post: Post, 
+  onToggleReplies: () => void, 
+  onReplyAdded: (r: Reply) => void,
+  onDeletePost: (id: string) => void,
+  onDeleteReply: (postId: string, replyId: string) => void
+}) {
+  const { getToken, userId } = useAuth();
   const [replyContent, setReplyContent] = useState("");
   const [replyImage, setReplyImage] = useState<File | null>(null);
   const [replyPreview, setReplyPreview] = useState<string | null>(null);
@@ -291,6 +314,23 @@ function PostCard({ post, onToggleReplies, onReplyAdded }: { post: Post, onToggl
     }
   };
 
+  const handleDelete = async (id: string, isReply: boolean = false) => {
+    if (!confirm(`Are you sure you want to delete this ${isReply ? 'reply' : 'post'}?`)) return;
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("Not authenticated");
+      await communityAPI.deletePost(id, token);
+      if (isReply) {
+        onDeleteReply(post.id, id);
+      } else {
+        onDeletePost(id);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete");
+    }
+  };
+
   // Convert URLs to absolute if needed
   const getImageUrl = (url?: string) => {
     if (!url) return null;
@@ -319,10 +359,16 @@ function PostCard({ post, onToggleReplies, onReplyAdded }: { post: Post, onToggl
               </div>
             </div>
           </div>
-          <button className="p-2 rounded-full hover:bg-slate-100 transition opacity-0 group-hover:opacity-100">
-            <MoreHorizontal className="w-5 h-5 text-slate-400" />
-          </button>
-        </div>
+            {userId === post.author_id && (
+              <button 
+                onClick={() => handleDelete(post.id)}
+                className="p-2 rounded-full hover:bg-rose-50 text-rose-500 transition opacity-0 group-hover:opacity-100"
+                title="Delete Post"
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
+            )}
+          </div>
 
         {/* Content */}
         <div className="text-slate-700 mb-4 whitespace-pre-wrap leading-relaxed">
@@ -414,10 +460,20 @@ function PostCard({ post, onToggleReplies, onReplyAdded }: { post: Post, onToggl
                   )}
                 </div>
                 <div className="flex-1">
-                  <div className="bg-slate-50 p-3 rounded-2xl rounded-tl-none">
+                  <div className="bg-slate-50 p-3 rounded-2xl rounded-tl-none relative group/reply">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-bold text-slate-800">{reply.author_name}</span>
-                      <span className="text-[10px] text-slate-400">{formatDistanceToNow(new Date(reply.created_at))} ago</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-slate-400">{formatDistanceToNow(new Date(reply.created_at))} ago</span>
+                        {userId === reply.author_id && (
+                          <button 
+                            onClick={() => handleDelete(reply.id, true)}
+                            className="text-rose-400 hover:text-rose-600 transition opacity-0 group-hover/reply:opacity-100"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <div className="text-sm text-slate-700 whitespace-pre-wrap">{reply.content}</div>
                     {reply.image_url && (

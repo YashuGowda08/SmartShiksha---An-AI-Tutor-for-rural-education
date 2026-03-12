@@ -27,30 +27,52 @@ export default function TakeTestPage() {
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [genProgress, setGenProgress] = useState(0);
 
   // Fetch test data
-  useEffect(() => {
-    const fetchTest = async () => {
-      try {
-        const res = await mockTestAPI.getTest(params.testId as string);
-        setQuestions(res.data.questions || []);
-        const duration = res.data.duration_minutes || 60;
-        setTestDuration(duration);
-        setTimeLeft(duration * 60);
-      } catch {
+  const fetchTest = useCallback(async (isRetry = false) => {
+    if (!isRetry) setLoading(true);
+    try {
+      const res = await mockTestAPI.getTest(params.testId as string);
+      const testData = res.data;
+      
+      setQuestions(testData.questions || []);
+      const duration = testData.duration_minutes || 60;
+      setTestDuration(duration);
+      setTimeLeft(duration * 60);
+      setIsGenerating(testData.is_generating || false);
+
+      // If still generating, set up a poll
+      if (testData.is_generating) {
+        setTimeout(() => fetchTest(true), 5000);
+        setGenProgress(prev => Math.min(prev + 20, 90));
+      } else {
+        setGenProgress(100);
+      }
+    } catch (err) {
+      console.error("Fetch error:", err);
+      if (!isRetry) {
+        const isFullExam = (params.testId as string).includes("69b2c943") || (params.testId as string).includes("69b2c944");
+        const fallbackDuration = isFullExam ? 180 : 60;
+        
+        setTestDuration(fallbackDuration);
+        setTimeLeft(fallbackDuration * 60);
         setQuestions([
           { id: "q1", question_text: "What is the value of sin 30°?", question_type: "MCQ", options: ["1/2", "1/√2", "√3/2", "1"], marks: 1 },
           { id: "q2", question_text: "If tan θ = 3/4, find sin θ.", question_type: "MCQ", options: ["3/5", "4/5", "3/4", "4/3"], marks: 1 },
-          { id: "q3", question_text: "Prove that sin²θ + cos²θ = 1", question_type: "Short Answer", options: [], marks: 3 },
-          { id: "q4", question_text: "A ladder 10m long reaches a window 8m high. Find the distance of the foot from the wall.", question_type: "Numerical", options: [], marks: 4 },
-          { id: "q5", question_text: "What is cos 60°?", question_type: "MCQ", options: ["1/2", "√3/2", "0", "1"], marks: 1 },
+          { id: "q3", question_text: "What is the capital of India?", question_type: "MCQ", options: ["New Delhi", "Mumbai", "Kolkata", "Chennai"], marks: 1 },
+          { id: "q4", question_text: "Solve: 2 + 2 = ?", question_type: "Numerical", options: [], marks: 1 },
         ]);
-      } finally {
-        setLoading(false);
       }
-    };
-    fetchTest();
+    } finally {
+      if (!isRetry) setLoading(false);
+    }
   }, [params.testId]);
+
+  useEffect(() => {
+    fetchTest();
+  }, [fetchTest]);
 
   // Timer
   useEffect(() => {
@@ -131,7 +153,7 @@ export default function TakeTestPage() {
         {
           test_id: params.testId,
           answers: answerList,
-          time_taken_seconds: 3600 - timeLeft,
+          time_taken_seconds: (testDuration * 60) - timeLeft,
           proctoring_warnings: warnings,
           auto_submitted: autoSubmitted,
         },
@@ -146,15 +168,39 @@ export default function TakeTestPage() {
   };
 
   const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
+    // Ensure seconds is not negative
+    const absSeconds = Math.max(0, Math.floor(seconds));
+    const m = Math.floor(absSeconds / 60);
+    const s = absSeconds % 60;
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  if (loading) {
+  if (loading || (isGenerating && questions.length === 0)) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+      <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4">
+        <div className="relative w-24 h-24 mb-8">
+          <div className="absolute inset-0 border-4 border-indigo-100 rounded-full" />
+          <div className="absolute inset-0 border-4 border-indigo-600 rounded-full border-t-transparent animate-spin" />
+          <div className="absolute inset-4 bg-indigo-50 rounded-full flex items-center justify-center">
+            <Clock className="w-8 h-8 text-indigo-600 animate-pulse" />
+          </div>
+        </div>
+        <h2 className="text-2xl font-bold text-slate-800 mb-3">
+          {isGenerating ? "AI is Crafting Your Exam" : "Loading Test Content"}
+        </h2>
+        <p className="text-slate-500 max-w-sm mx-auto mb-8">
+          {isGenerating 
+            ? "Shiksha AI is generating high-quality, randomized questions specifically for this session. Please wait a moment..." 
+            : "Preparing your testing environment and synchronizing with our servers."}
+        </p>
+        {isGenerating && (
+          <div className="w-full max-w-xs h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div 
+              className="h-full gradient-primary transition-all duration-1000" 
+              style={{ width: `${genProgress}%` }}
+            />
+          </div>
+        )}
       </div>
     );
   }
@@ -300,17 +346,17 @@ export default function TakeTestPage() {
         </button>
 
         {/* Question dots */}
-        <div className="flex gap-1.5 flex-wrap justify-center max-w-xs">
+        <div className="flex gap-1.5 flex-wrap justify-center max-w-md max-h-32 overflow-y-auto p-2 bg-slate-50/50 rounded-xl">
           {questions.map((q, i) => (
             <button
               key={i}
               onClick={() => setCurrentQ(i)}
-              className={`w-8 h-8 rounded-lg text-xs font-bold transition ${
+              className={`w-8 h-8 flex-shrink-0 rounded-lg text-[10px] font-bold transition ${
                 i === currentQ
                   ? "gradient-primary text-white"
                   : answers[q.id]
                   ? "bg-emerald-100 text-emerald-700"
-                  : "bg-slate-100 text-slate-500"
+                  : "bg-white text-slate-500 border border-slate-200"
               }`}
             >
               {i + 1}

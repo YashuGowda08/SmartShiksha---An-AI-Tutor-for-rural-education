@@ -41,33 +41,17 @@ export default function DashboardPage() {
           setData(res.data);
         }
       } catch (err) {
-        console.error(err);
-        // Use demo data if API not available
+        console.error("Dashboard fetch error:", err);
+        // Set zero/empty data for "precise" results instead of random demo data
         setData({
-          topics_completed: 24,
-          total_topics: 120,
-          tests_taken: 8,
-          average_score: 72.5,
-          total_study_time_hours: 45.2,
-          subject_progress: {
-            "Mathematics": { completed: 8, total: 30, percentage: 26.7 },
-            "Science": { completed: 6, total: 25, percentage: 24 },
-            "English": { completed: 5, total: 20, percentage: 25 },
-            "Social Science": { completed: 3, total: 25, percentage: 12 },
-            "Computer Science": { completed: 2, total: 20, percentage: 10 },
-          },
-          recent_scores: [
-            { test_id: "1", score: 78, percentage: 78, date: "2026-03-10" },
-            { test_id: "2", score: 65, percentage: 65, date: "2026-03-08" },
-            { test_id: "3", score: 82, percentage: 82, date: "2026-03-05" },
-            { test_id: "4", score: 70, percentage: 70, date: "2026-03-03" },
-            { test_id: "5", score: 75, percentage: 75, date: "2026-03-01" },
-          ],
-          recommended_topics: [
-            { topic_id: "1", name: "Trigonometric Ratios", score: 45 },
-            { topic_id: "2", name: "Chemical Reactions", score: 50 },
-            { topic_id: "3", name: "Linear Equations", score: 55 },
-          ],
+          topics_completed: 0,
+          total_topics: 0,
+          tests_taken: 0,
+          average_score: 0,
+          total_study_time_hours: 0,
+          subject_progress: {},
+          recent_scores: [],
+          recommended_topics: [],
         });
       } finally {
         setLoading(false);
@@ -246,6 +230,7 @@ export default function DashboardPage() {
           { href: "/ai-tutor", icon: "🤖", label: t("ai_tutor") },
           { href: "/mock-tests", icon: "📝", label: t("mock_tests") },
           { href: "/exam-generator", icon: "📄", label: t("exam_generator") },
+          { href: "/admin", icon: "🛡️", label: t("admin") },
         ].map((action) => (
           <Link
             key={action.href}

@@ -13,14 +13,15 @@ from app.schemas import PostCreate, ReplyCreate
 router = APIRouter(prefix="/community", tags=["Community"])
 
 def serialize_doc(doc: dict) -> dict:
-    """Convert MongoDB doc to JSON-safe dict."""
+    """Convert MongoDB doc to JSON-safe dict, ensuring UTC ISO format."""
     if not doc:
         return None
     doc["id"] = str(doc["_id"])
     del doc["_id"]
     for key, val in doc.items():
         if isinstance(val, datetime):
-            doc[key] = val.isoformat()
+            # Append 'Z' to indicate UTC, otherwise date-fns might treat it as local
+            doc[key] = val.isoformat() + "Z" if not val.isoformat().endswith("Z") else val.isoformat()
         if isinstance(val, ObjectId):
             doc[key] = str(val)
     return doc
@@ -124,3 +125,26 @@ async def create_reply(
     
     reply_doc["_id"] = result.inserted_id
     return serialize_doc(reply_doc)
+
+@router.delete("/posts/{post_id}")
+async def delete_post(post_id: str, user: dict = Depends(get_current_user)):
+    """Delete a post or reply. Only author can delete."""
+    post = await community_posts_collection.find_one({"_id": ObjectId(post_id)})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+        
+    if post["author_id"] != user["id"] and user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized to delete this post")
+        
+    # If it's a top-level post, delete its replies too
+    if post["parent_id"] is None:
+        await community_posts_collection.delete_many({"parent_id": post_id})
+    else:
+        # If it's a reply, decrement parent's count
+        await community_posts_collection.update_one(
+            {"_id": ObjectId(post["parent_id"])},
+            {"$inc": {"replies_count": -1}}
+        )
+        
+    await community_posts_collection.delete_one({"_id": ObjectId(post_id)})
+    return {"message": "Success"}

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Award, BookOpen, Trophy, ArrowRight, Atom, FlaskConical, Calculator, Leaf } from "lucide-react";
+import { Award, BookOpen, Trophy, ArrowRight, Atom, FlaskConical, Calculator, Leaf, Monitor, Clock } from "lucide-react";
 
 // Real JEE syllabus chapters (matching PUC syllabus)
 const jeeSubjects = [
@@ -177,6 +177,70 @@ export default function JeeNeetPage() {
             </div>
           </div>
         ))}
+      </div>
+      
+      {/* Professional Practice Exams */}
+      <div className="mt-12 mb-8">
+        <h2 className="text-2xl font-bold mb-4">Professional Full-Length Mock Exams</h2>
+        <div className="grid sm:grid-cols-2 gap-6">
+          <div className={`card overflow-hidden border-2 transition hover:shadow-xl ${
+            mode === "JEE" ? "border-indigo-100" : "border-slate-100"
+          }`}>
+            <div className={`h-2 ${mode === "JEE" ? "bg-indigo-500" : "bg-slate-400"}`} />
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-4">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center">
+                  <Trophy className="w-6 h-6 text-indigo-600" />
+                </div>
+                <span className="px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-full">JEE MAIN</span>
+              </div>
+              <h3 className="text-xl font-bold mb-2">JEE Main Full Mock Test</h3>
+              <p className="text-sm text-slate-500 mb-6">
+                Complete 90-question exam covering Physics, Chemistry, and Mathematics (30 each). Includes MCQs and Numericals with +4/-1 marking.
+              </p>
+              <div className="flex items-center gap-4 text-xs font-semibold text-slate-600 mb-6">
+                <span className="flex items-center gap-1"><Monitor className="w-4 h-4" /> 90 Questions</span>
+                <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> 180 Mins</span>
+                <span className="flex items-center gap-1"><Award className="w-4 h-4" /> 300 Marks</span>
+              </div>
+              <Link 
+                href="/mock-tests/69b2c943a3db42e8c011bcda" 
+                className="btn-primary w-full flex items-center justify-center gap-2"
+              >
+                Start JEE Exam <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+
+          <div className={`card overflow-hidden border-2 transition hover:shadow-xl ${
+            mode === "NEET" ? "border-pink-100" : "border-slate-100"
+          }`}>
+            <div className={`h-2 ${mode === "NEET" ? "bg-pink-500" : "bg-slate-400"}`} />
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-4">
+                <div className="w-12 h-12 rounded-2xl bg-pink-100 flex items-center justify-center">
+                  <FlaskConical className="w-6 h-6 text-pink-600" />
+                </div>
+                <span className="px-3 py-1 bg-pink-50 text-pink-700 text-xs font-bold rounded-full">NEET UG</span>
+              </div>
+              <h3 className="text-xl font-bold mb-2">NEET UG Full Mock Test</h3>
+              <p className="text-sm text-slate-500 mb-6">
+                Comprehensive 200-question exam covering Biology, Physics, and Chemistry. Strictly follows the latest NTA pattern.
+              </p>
+              <div className="flex items-center gap-4 text-xs font-semibold text-slate-600 mb-6">
+                <span className="flex items-center gap-1"><Monitor className="w-4 h-4" /> 200 Questions</span>
+                <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> 200 Mins</span>
+                <span className="flex items-center gap-1"><Award className="w-4 h-4" /> 720 Marks</span>
+              </div>
+              <Link 
+                href="/mock-tests/69b2c944a3db42e8c011bd35" 
+                className="btn-primary w-full bg-pink-600 hover:bg-pink-700 flex items-center justify-center gap-2"
+              >
+                Start NEET Exam <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

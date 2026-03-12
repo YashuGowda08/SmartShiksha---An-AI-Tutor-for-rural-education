@@ -22,7 +22,7 @@ async def verify_admin(user: dict = Depends(get_current_user)):
 
 
 @router.get("/stats")
-async def get_platform_stats(user: dict = Depends(get_current_user)):
+async def get_platform_stats(user: dict = Depends(verify_admin)):
     """Get platform-wide statistics."""
     # Total students
     total_students = await users_collection.count_documents({"role": "student"})
@@ -82,7 +82,7 @@ async def get_platform_stats(user: dict = Depends(get_current_user)):
 
 
 @router.post("/upload-questions")
-async def upload_questions(file: UploadFile = File(...), user: dict = Depends(get_current_user)):
+async def upload_questions(file: UploadFile = File(...), user: dict = Depends(verify_admin)):
     """Upload question bank from JSON file."""
     content = await file.read()
     try:
@@ -106,7 +106,7 @@ async def upload_questions(file: UploadFile = File(...), user: dict = Depends(ge
 async def list_users(
     page: int = 1,
     limit: int = 20,
-    user: dict = Depends(get_current_user),
+    user: dict = Depends(verify_admin),
 ):
     """List all users (admin only)."""
     skip = (page - 1) * limit

@@ -37,6 +37,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [langOpen, setLangOpen] = useState(false);
   const { getToken, isLoaded, userId } = useAuth();
   const { signOut } = useClerk();
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function initUser() {
@@ -45,13 +47,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           const token = await getToken();
           if (token) {
             await authAPI.register(token);
-            const user = await authAPI.getMe(token);
-            if (!user.data.onboarding_complete && pathname !== "/onboarding") {
+            const userRes = await authAPI.getMe(token);
+            const user = userRes.data.data; // Correctly handle nested response
+            setUserRole(user.role);
+            if (!user.onboarding_complete && pathname !== "/onboarding") {
               // onboarding redirect could go here
             }
           }
         } catch (e) {
           console.error("User init error", e);
+        } finally {
+          setLoading(false);
         }
       }
     }
@@ -85,7 +91,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <span className="text-xl font-bold gradient-text">Smart Shiksha</span>
           </div>
 
-          {/* Nav links */}
           <nav className="space-y-1 flex-1">
             {navItems.map((item) => (
               <Link
