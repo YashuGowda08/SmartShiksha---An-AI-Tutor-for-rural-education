@@ -233,11 +233,12 @@ async def generate_topic_content(
 
 Provide the response in the following JSON format:
 {{
-  "explanation": "Markdown formatted detailed explanation of the concept...",
-  "examples": "Markdown formatted examples with solutions..."
+  "explanation": "Clear and detailed explanation of the concept. Use plain text only. No # or ** or other markdown symbols.",
+  "examples": "Clear examples with solutions. Use plain text only. No # or ** or other markdown symbols."
 }}
 
-Explain clearly for a Class {student_class} student. Use Indian context examples.
+Explain clearly for a Class {student_class} student. Use Indian context examples. 
+IMPORTANT: Use absolute plain text only for the field values. DO NOT use markdown headers (#), bolding (**), or lists (-). Use simple paragraphs and numbered steps (1., 2., etc.) if needed.
 Respond in {language}."""
 
     prompt = ChatPromptTemplate.from_messages([
@@ -255,10 +256,19 @@ Respond in {language}."""
     })
 
     content = response.content.strip()
+    
+    # Clean up any potential markdown code blocks
     if "```json" in content:
         content = content.split("```json")[1].split("```")[0].strip()
     elif "```" in content:
         content = content.split("```")[1].split("```")[0].strip()
+    
+    # If the response is still wrapped in braces but has extra text
+    if not (content.startswith("{") and content.endswith("}")):
+        import re
+        json_match = re.search(r'\{.*\}', content, re.DOTALL)
+        if json_match:
+            content = json_match.group(0)
 
     try:
         import json
