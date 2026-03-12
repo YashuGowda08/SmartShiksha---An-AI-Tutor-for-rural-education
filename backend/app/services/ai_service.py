@@ -13,8 +13,8 @@ def get_llm():
         api_key=settings.GROQ_API_KEY,
         model_name=settings.GROQ_MODEL,
         temperature=0.7,
-        max_tokens=4096,
-        request_timeout=25,
+        max_tokens=2048,
+        request_timeout=20,
     )
 
 
@@ -165,8 +165,8 @@ async def generate_tutor_response(
         student_class, subject, topic, language, chat_history
     )
 
-    max_retries = 3
-    retry_delay = 2
+    max_retries = 2
+    retry_delay = 1
     last_error = None
 
     for attempt in range(max_retries):
@@ -182,7 +182,7 @@ async def generate_tutor_response(
             if "429" in str(e): # Rate limit
                 print(f"[AI-TUTOR] Rate limit hit. Retrying in {retry_delay}s...")
                 await asyncio.sleep(retry_delay)
-                retry_delay *= 2
+                retry_delay += 2
                 continue
             break # Non-retryable error
             
