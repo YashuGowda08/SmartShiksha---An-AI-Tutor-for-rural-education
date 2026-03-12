@@ -52,10 +52,18 @@ export default function AITutorPage() {
 
       setSessionId(res.data.session_id);
       setMessages((prev) => [...prev, { role: "assistant", content: res.data.response }]);
-    } catch (error) {
+    } catch (error: any) {
+      let errorMessage = "Sorry, I encountered an error. Please check your connection and try again. 🙏";
+      
+      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        errorMessage = "I'm taking a bit longer than usual to think. 🧠 Please try again in 1 minute, as I might be busy helping other students! 🙏";
+      } else if (error.response?.status === 429) {
+        errorMessage = "I've reached my limit for a moment. ⏳ Please try again in about a minute!";
+      }
+
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Sorry, I encountered an error. Please check that the backend is running and your Groq API key is configured. 🙏" },
+        { role: "assistant", content: errorMessage },
       ]);
     } finally {
       setLoading(false);
