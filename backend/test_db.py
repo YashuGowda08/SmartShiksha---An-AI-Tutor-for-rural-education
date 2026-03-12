@@ -5,7 +5,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.errors import ServerSelectionTimeoutError
 
 async def test_connection():
-    uri = "mongodb+srv://SmartShiksha_db_user:6W7wA5MeTpfOUCMq@cluster0.iqkfuvn.mongodb.net/"
+    uri = "MANGODB URI"
     print(f"Testing connection to: {uri.split('@')[1]}")
     client = AsyncIOMotorClient(uri, serverSelectionTimeoutMS=5000)
     try:
