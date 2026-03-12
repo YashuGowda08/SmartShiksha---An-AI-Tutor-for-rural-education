@@ -183,8 +183,10 @@ async def generate_exam_questions(
     language: str = "English",
     test_type: str = "Chapter Test",
 ) -> str:
-    """Generate exam questions using AI."""
+    """Generate exam questions using AI with retry logic."""
     llm = get_llm()
+    import asyncio
+    import time
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", "You are an expert exam paper setter for Indian school board exams. Always respond with raw valid JSON only. No markdown, no code blocks."),
@@ -192,26 +194,51 @@ async def generate_exam_questions(
     ])
 
     chain = prompt | llm
-
-    response = await chain.ainvoke({
-        "student_class": student_class,
-        "subject": subject,
-        "chapter": chapter,
-        "topic": topic,
-        "difficulty": difficulty,
-        "question_types": question_types,
-        "num_questions": num_questions,
-        "language": language,
-        "test_type": test_type,
-    })
-
-    content = response.content.strip()
-    if "```json" in content:
-        content = content.split("```json")[1].split("```")[0].strip()
-    elif "```" in content:
-        content = content.split("```")[1].split("```")[0].strip()
     
-    return content
+    max_retries = 3
+    retry_delay = 2
+    
+    last_error = None
+    for attempt in range(max_retries):
+        try:
+            response = await chain.ainvoke({
+                "student_class": student_class,
+                "subject": subject,
+                "chapter": chapter,
+                "topic": topic,
+                "difficulty": difficulty,
+                "question_types": question_types,
+                "num_questions": num_questions,
+                "language": language,
+                "test_type": test_type,
+            })
+            
+            content = response.content.strip()
+            # Clean up formatting noise
+            if "```json" in content:
+                content = content.split("```json")[1].split("```")[0].strip()
+            elif "```" in content:
+                content = content.split("```")[1].split("```")[0].strip()
+            
+            # Simple validation: should look like a JSON list
+            if content.startswith("[") and content.endswith("]"):
+                return content
+            
+            # If not a list, maybe it's wrapped in an object?
+            if content.startswith("{") and content.endswith("}"):
+                return content
+                
+            last_error = f"Invalid format: {content[:100]}..."
+        except Exception as e:
+            last_error = str(e)
+            if "429" in str(e): # Rate limit
+                print(f"[AI-SYNC] Rate limit hit. Retrying in {retry_delay}s...")
+                await asyncio.sleep(retry_delay)
+                retry_delay *= 2
+                continue
+            break # Non-retryable error
+            
+    raise Exception(f"Failed to generate questions after {max_retries} attempts. Last error: {last_error}")
 
 
 async def generate_topic_content(
