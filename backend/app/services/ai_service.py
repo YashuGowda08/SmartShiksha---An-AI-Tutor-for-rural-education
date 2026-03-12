@@ -158,18 +158,34 @@ async def generate_tutor_response(
     language: str = "English",
     chat_history: list = None,
 ) -> str:
-    """Generate an AI tutor response."""
+    """Generate an AI tutor response with retry logic."""
+    import asyncio
     chain, history_messages, params = build_tutor_chain(
         student_class, subject, topic, language, chat_history
     )
 
-    response = await chain.ainvoke({
-        "input": message,
-        "chat_history": history_messages,
-        **params,
-    })
+    max_retries = 3
+    retry_delay = 2
+    last_error = None
 
-    return response.content
+    for attempt in range(max_retries):
+        try:
+            response = await chain.ainvoke({
+                "input": message,
+                "chat_history": history_messages,
+                **params,
+            })
+            return response.content
+        except Exception as e:
+            last_error = str(e)
+            if "429" in str(e): # Rate limit
+                print(f"[AI-TUTOR] Rate limit hit. Retrying in {retry_delay}s...")
+                await asyncio.sleep(retry_delay)
+                retry_delay *= 2
+                continue
+            break # Non-retryable error
+            
+    raise Exception(f"Failed to generate tutor response: {last_error}")
 
 
 async def generate_exam_questions(

@@ -77,7 +77,11 @@ async def chat_with_tutor(
             chat_history=chat_history[-10:],
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
+        print(f"[AI-TUTOR] Error generating response: {e}")
+        import traceback
+        traceback.print_exc()
+        # Fallback response instead of 500
+        ai_response = "I'm having a bit of trouble connecting to my brain right now. 🧠 Please try asking again in a few moments, or check your internet connection! 🙏"
 
     # Save messages
     now = datetime.utcnow()
