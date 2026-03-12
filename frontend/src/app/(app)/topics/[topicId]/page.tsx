@@ -26,74 +26,26 @@ export default function TopicDetailPage() {
   const { t, language } = useLanguage();
   const [topic, setTopic] = useState<TopicData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [completed, setCompleted] = useState(false);
   const [activeTab, setActiveTab] = useState<"explanation" | "examples" | "practice">("explanation");
 
   useEffect(() => {
     const fetchTopic = async () => {
       try {
+        setError(null);
+        setLoading(true);
         const res = await contentAPI.getTopic(params.topicId as string, language);
         setTopic(res.data);
-      } catch {
-        setTopic({
-          id: params.topicId as string,
-          name: "Trigonometric Ratios",
-          explanation: `## Trigonometric Ratios
-
-Trigonometric ratios are the ratios of the sides of a right-angled triangle with respect to one of its acute angles.
-
-### The Three Basic Ratios
-
-For a right triangle with angle θ:
-
-- **sin θ** = Opposite side / Hypotenuse
-- **cos θ** = Adjacent side / Hypotenuse  
-- **tan θ** = Opposite side / Adjacent side
-
-### Reciprocal Ratios
-
-- **cosec θ** = 1/sin θ = Hypotenuse / Opposite
-- **sec θ** = 1/cos θ = Hypotenuse / Adjacent
-- **cot θ** = 1/tan θ = Adjacent / Opposite
-
-### Important Relationship
-
-tan θ = sin θ / cos θ
-
-### 💡 Memory Trick
-
-**"Some People Have Curly Brown Hair Through Proper Brushing"**
-- **S**in = **P**erpendicular / **H**ypotenuse
-- **C**os = **B**ase / **H**ypotenuse
-- **T**an = **P**erpendicular / **B**ase`,
-          examples: `### Example 1
-In a right triangle, if the opposite side is 3 and hypotenuse is 5, find sin θ.
-
-**Solution:** sin θ = 3/5 = 0.6
-
-### Example 2
-If cos θ = 4/5, find sin θ and tan θ.
-
-**Solution:**
-- sin²θ + cos²θ = 1
-- sin²θ = 1 - (4/5)² = 1 - 16/25 = 9/25
-- sin θ = 3/5
-- tan θ = sin θ/cos θ = (3/5)/(4/5) = 3/4
-
-### Example 3
-A ladder 10m long reaches a window 8m above the ground. Find the distance of the foot from the wall.
-
-**Solution:**
-- Using Pythagoras: distance² + 8² = 10²
-- distance² = 100 - 64 = 36
-- distance = 6m`,
-        });
+      } catch (err) {
+        console.error("Failed to load topic", err);
+        setError("Failed to load topic content. Please check your connection or try again later.");
       } finally {
         setLoading(false);
       }
     };
     fetchTopic();
-  }, [params.topicId]);
+  }, [params.topicId, language]);
 
   const handleMarkComplete = async () => {
     try {
@@ -110,10 +62,31 @@ A ladder 10m long reaches a window 8m above the ground. Find the distance of the
     }
   };
 
-  if (loading || !topic) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !topic) {
+    return (
+      <div className="max-w-4xl mx-auto text-center py-20">
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-8 max-w-md mx-auto">
+          <HelpCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-red-700 mb-2">Content Unavailable</h2>
+          <p className="text-red-600 mb-6">{error || "This topic could not be loaded."}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="btn-primary w-full"
+          >
+            Try Again
+          </button>
+          <Link href="/subjects" className="block mt-4 text-sm text-slate-500 hover:text-indigo-600">
+            Back to Subjects
+          </Link>
+        </div>
       </div>
     );
   }
