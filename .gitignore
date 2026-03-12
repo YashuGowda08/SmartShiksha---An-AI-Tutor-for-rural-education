@@ -36,8 +36,17 @@ frontend/.env.local
 .DS_Store
 Thumbs.db
 
-# Project Specific
-backend/uploads/
-**/.gemini/
-**/brain/
-tmp/
+# Auxiliary Scripts and Logs
+backend/check_*.py
+backend/verify_*.py
+backend/test_*.py
+backend/db_test.*
+backend/cleanup_topics.py
+backend/seed_full_exams.py
+backend/trigger_professional_sync.py
+backend/errors.txt
+backend/full_exam_ids.txt
+backend/test_route.js
+backend/*.log
+push_*.txt
+*.log

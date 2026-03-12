@@ -1,6 +1,0 @@
-POST git-receive-pack (199709 bytes)
-branch 'main' set up to track 'origin/main'.
-Pushing to https://github.com/YashuGowda08/SmartShiksha.git
-To https://github.com/YashuGowda08/SmartShiksha.git
- * [new branch]      main -> main
-updating local tracking ref 'refs/remotes/origin/main'
