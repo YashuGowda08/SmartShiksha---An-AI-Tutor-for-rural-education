@@ -141,31 +141,16 @@ async def get_topic(topic_id: str, language: str = "English"):
     if not topic:
         raise HTTPException(status_code=404, detail="Topic not found")
     
-    # If explanation is missing, generate it dynamically
-    if not topic.get("explanation") or topic.get("explanation") == "Detailed content coming soon...":
-        chapter = await chapters_collection.find_one({"_id": ObjectId(topic["chapter_id"])})
-        subject = await subjects_collection.find_one({"_id": ObjectId(chapter["subject_id"])})
-        
-        content = await generate_topic_content(
-            student_class=chapter["student_class"],
-            subject=subject["name"],
-            chapter=chapter["name"],
-            topic=topic["name"],
-            language=language
-        )
-        
-        # Update DB
-        await topics_collection.update_one(
-            {"_id": ObjectId(topic_id)},
-            {"$set": {
-                "explanation": content.get("explanation", ""),
-                "examples": content.get("examples", ""),
-                "updated_at": datetime.utcnow()
-            }}
-        )
-        topic.update(content)
-
-    return serialize_doc(topic)
+    # Include metadata for breadcrumbs
+    chapter = await chapters_collection.find_one({"_id": ObjectId(topic["chapter_id"])})
+    subject = await subjects_collection.find_one({"_id": ObjectId(chapter["subject_id"])})
+    
+    response_data = serialize_doc(topic)
+    response_data["student_class"] = chapter.get("student_class", "Unknown")
+    response_data["subject_name"] = subject.get("name", "Unknown")
+    response_data["chapter_name"] = chapter.get("name", "Unknown")
+    
+    return response_data
 
 
 @router.post("/topics")

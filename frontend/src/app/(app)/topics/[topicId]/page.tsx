@@ -15,6 +15,9 @@ interface TopicData {
   name: string;
   explanation: string;
   examples: string;
+  student_class?: string;
+  subject_name?: string;
+  chapter_name?: string;
 }
 
 export default function TopicDetailPage() {
@@ -125,7 +128,9 @@ A ladder 10m long reaches a window 8m above the ground. Find the distance of the
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold mb-1">{topic.name}</h1>
-          <p className="text-slate-500">Class 10 • Mathematics • Trigonometry</p>
+          <p className="text-slate-500">
+            {topic.student_class} • {topic.subject_name} • {topic.chapter_name}
+          </p>
         </div>
         <div className="flex gap-2">
           <Link href={`/ai-tutor?topic=${topic.id}&name=${topic.name}`} className="btn-primary text-sm">
