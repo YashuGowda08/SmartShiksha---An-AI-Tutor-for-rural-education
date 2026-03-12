@@ -136,7 +136,6 @@ async def get_topics(chapter_id: str):
 
 @router.get("/topics/{topic_id}")
 async def get_topic(topic_id: str, language: str = "English"):
-    print(f"[CONTENT] Fetching topic: {topic_id} (Language: {language})")
     topic = await topics_collection.find_one({"_id": ObjectId(topic_id)})
     if not topic:
         raise HTTPException(status_code=404, detail="Topic not found")
@@ -144,8 +143,10 @@ async def get_topic(topic_id: str, language: str = "English"):
     chapter = await chapters_collection.find_one({"_id": ObjectId(topic["chapter_id"])})
     subject = await subjects_collection.find_one({"_id": ObjectId(chapter["subject_id"])})
 
-    # If explanation is missing, generate it dynamically
-    if not topic.get("explanation") or topic.get("explanation") == "Detailed content coming soon...":
+    # If explanation OR examples are missing, generate them dynamically
+    if (not topic.get("explanation") or topic.get("explanation") == "Detailed content coming soon..." or 
+        not topic.get("examples") or topic.get("examples") == "Example problems coming soon..."):
+        print(f"[CONTENT] Generating missing content for topic: {topic.get('name')}")
         content = await generate_topic_content(
             student_class=chapter.get("student_class", "10"),
             subject=subject.get("name", "General"),

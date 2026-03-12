@@ -277,8 +277,8 @@ async def generate_topic_content(
 
 Provide the response in the following JSON format:
 {{
-  "explanation": "Clear and detailed explanation of the concept. Use plain text only. No # or ** or other markdown symbols.",
-  "examples": "Clear examples with solutions. Use plain text only. No # or ** or other markdown symbols."
+  "explanation": "Clear and detailed explanation of the concept. Use simple paragraphs and numbered steps. No markdown special characters like # or **.",
+  "examples": "Provide at least 3 real-world examples with step-by-step solutions suitable for this class level. DO NOT use placeholders like 'coming soon'. Use plain text only without markdown symbols (#, **)."
 }}
 
 Explain clearly for a Class {student_class} student. Use Indian context examples. 
@@ -316,11 +316,20 @@ Respond in {language}."""
 
     try:
         import json
-        return json.loads(content)
-    except:
+        parsed = json.loads(content)
+        # Ensure we don't return placeholders even if parsed partially
+        if not parsed.get("explanation") or parsed.get("explanation") == "Detailed content coming soon...":
+            parsed["explanation"] = content # Fallback to raw content if parsed explanation is empty
+        if not parsed.get("examples") or "coming soon" in parsed.get("examples", "").lower():
+             # If examples are still missing in JSON, we can't do much but we should avoid the hardcoded string
+             # that triggers infinite retries if not careful
+             pass
+        return parsed
+    except Exception as e:
+        print(f"[AI-SERVICE] JSON Parse Error: {e}")
         return {
             "explanation": content if content else "Detailed content coming soon...",
-            "examples": "Example problems coming soon..."
+            "examples": "No examples could be generated at this moment. Please try again."
         }
 
 
