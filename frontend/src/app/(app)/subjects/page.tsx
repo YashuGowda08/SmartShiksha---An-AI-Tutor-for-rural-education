@@ -128,21 +128,6 @@ export default function SubjectsPage() {
           </select>
         </div>
       </div>
-      <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-        {["8", "9", "10", "11", "12"].map((cls) => (
-          <button
-            key={cls}
-            onClick={() => { setSelectedClass(cls); setLoading(true); }}
-            className={`px-5 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap transition ${
-              selectedClass === cls
-                ? "gradient-primary text-white"
-                : "bg-white border border-slate-200 hover:border-indigo-300"
-            }`}
-          >
-            Class {cls}
-          </button>
-        ))}
-      </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
