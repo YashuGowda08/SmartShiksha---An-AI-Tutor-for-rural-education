@@ -14,6 +14,71 @@ from app.services.pdf_service import create_exam_pdf
 router = APIRouter(prefix="/exams", tags=["Exam Papers"])
 
 
+def build_fallback_questions(num_questions: int, target: str, question_types_str: str) -> list:
+    """Generate fallback questions dynamically when AI fails."""
+    types = [t.strip() for t in question_types_str.split(",")]
+    if not types:
+        types = ["Short Answer"]
+    
+    questions = []
+    templates_mcq = [
+        ("Which of the following best describes {target}?", ["Definition A", "Definition B", "Definition C", "Definition D"]),
+        ("What is a key characteristic of {target}?", ["Characteristic A", "Characteristic B", "Characteristic C", "Characteristic D"]),
+        ("Which principle is most closely associated with {target}?", ["Principle A", "Principle B", "Principle C", "Principle D"]),
+        ("In the context of {target}, which statement is correct?", ["Statement A", "Statement B", "Statement C", "Statement D"]),
+        ("What is the primary application of {target}?", ["Application A", "Application B", "Application C", "Application D"]),
+    ]
+    templates_short = [
+        "Explain the fundamental concepts of {target}.",
+        "Discuss the practical applications of {target} with examples.",
+        "What are the key principles governing {target}?",
+        "Describe the importance of {target} in real-world scenarios.",
+        "Compare and contrast different aspects of {target}.",
+        "How does {target} relate to everyday life? Give examples.",
+        "What are the main components of {target}? Explain each.",
+        "Solve a problem related to {target} and show your working.",
+        "Define {target} and list its significant properties.",
+        "Write a short note on the historical development of {target}.",
+    ]
+    templates_numerical = [
+        "Calculate the result when the key formula of {target} is applied to a standard problem.",
+        "Find the numerical value related to {target} given standard conditions.",
+        "Solve the following numerical problem related to {target}.",
+        "Determine the output when principles of {target} are applied.",
+        "Compute the answer for a typical {target} calculation problem.",
+    ]
+
+    for i in range(num_questions):
+        q_type = types[i % len(types)]
+        if q_type == "MCQ":
+            template = templates_mcq[i % len(templates_mcq)]
+            questions.append({
+                "question_text": template[0].format(target=target),
+                "question_type": "MCQ",
+                "options": template[1],
+                "correct_answer": template[1][0],
+                "explanation": f"This relates to the core concepts of {target}.",
+                "marks": 1
+            })
+        elif q_type == "Numerical":
+            questions.append({
+                "question_text": templates_numerical[i % len(templates_numerical)].format(target=target),
+                "question_type": "Numerical",
+                "correct_answer": "Refer to standard formulas.",
+                "explanation": f"Apply the relevant formula for {target}.",
+                "marks": 4
+            })
+        else:  # Short Answer
+            questions.append({
+                "question_text": templates_short[i % len(templates_short)].format(target=target),
+                "question_type": "Short Answer",
+                "correct_answer": f"Detailed answer based on {target} concepts.",
+                "explanation": f"Conceptual understanding of {target}.",
+                "marks": 3
+            })
+    return questions
+
+
 async def get_optional_user(authorization: str = Header(None)) -> dict:
     """Get user if authenticated, otherwise return a guest dict."""
     try:
@@ -84,24 +149,8 @@ async def generate_paper(req: dict, user: dict = Depends(get_optional_user)):
             print(f"[EXAM] Parsed {len(questions)} questions successfully")
         except Exception as parse_err:
             print(f"[EXAM] JSON parse error: {parse_err}")
-            # Intelligent fallback questions based on the topic
             target = topic_name or chapter_name or subject_name
-            questions = [
-                {
-                    "question_text": f"What are the fundamental principles of {target}? Explain with examples.",
-                    "question_type": "Short Answer",
-                    "correct_answer": "Key principles defined by standard curriculum.",
-                    "explanation": "Fundamental conceptual overview.",
-                    "marks": 5
-                },
-                {
-                    "question_text": f"Discuss the practical applications of {target} in real-life scenarios.",
-                    "question_type": "Short Answer",
-                    "correct_answer": "Relevant applications from daily life or industry.",
-                    "explanation": "Application-based understanding.",
-                    "marks": 5
-                }
-            ]
+            questions = build_fallback_questions(num_questions, target, question_types)
             
         # Ensure questions is always a list of dicts
         if not isinstance(questions, list):
@@ -122,22 +171,7 @@ async def generate_paper(req: dict, user: dict = Depends(get_optional_user)):
         traceback.print_exc()
         # High-quality fallback instead of "AI busy"
         target = topic_name or chapter_name or subject_name
-        questions = [
-            {
-                "question_text": f"Describe the core components and significance of {target}.",
-                "question_type": "Short Answer",
-                "correct_answer": "Detailed description of identifying features and importance.",
-                "explanation": "Core conceptual question.",
-                "marks": 5
-            },
-            {
-                "question_text": f"Solve a typical problem involving the key formulas/laws associated with {target}.",
-                "question_type": "Short Answer",
-                "correct_answer": "Step-by-step problem solving approach.",
-                "explanation": "Problem-solving assessment.",
-                "marks": 5
-            }
-        ]
+        questions = build_fallback_questions(num_questions, target, question_types)
 
     # Save exam paper (Handle guest user carefully)
     user_id = user.get("id", "guest")

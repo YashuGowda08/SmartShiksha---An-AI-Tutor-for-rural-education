@@ -51,7 +51,7 @@ def create_exam_pdf(
         exam_label = "NEET Pattern"
     else:
         accent = PRIMARY_COLOR
-        exam_label = "CBSE Pattern"
+        exam_label = f"{test_type} Pattern"
 
     # Custom styles
     title_style = ParagraphStyle("ExamTitle", parent=styles["Title"], fontSize=20, textColor=DARK_COLOR, alignment=TA_CENTER, spaceAfter=4)

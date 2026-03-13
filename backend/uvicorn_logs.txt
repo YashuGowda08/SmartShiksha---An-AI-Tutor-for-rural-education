@@ -7,3 +7,567 @@ INFO:     Started server process [8240]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 WARNING:  WatchFiles detected changes in 'app\routers\auth.py'. Reloading...
+MongoDB indexes created
+Smart Shiksha API started!
+MongoDB: Connected
+INFO:     127.0.0.1:53976 - "OPTIONS /api/v1/progress/dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53976 - "GET /api/v1/progress/dashboard HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 110, in verify_clerk_token
+    except Exception as e:
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f4e1' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\protocols\http\httptools_impl.py", line 419, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\middleware\proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 762, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 782, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 285, in app
+    raise e
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 275, in app
+    solved_result = await solve_dependencies(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\dependencies\utils.py", line 598, in solve_dependencies
+    solved = await call(**sub_values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 122, in get_current_user
+    # 2. Not found or missing details? Fetch from Clerk API
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 116, in verify_clerk_token
+    clerk_auth = await verify_clerk_token(authorization)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>
+INFO:     127.0.0.1:65523 - "POST /api/v1/auth/register HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 110, in verify_clerk_token
+    except Exception as e:
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f4e1' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\protocols\http\httptools_impl.py", line 419, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\middleware\proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 762, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 782, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 158, in register_user
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 116, in verify_clerk_token
+    clerk_auth = await verify_clerk_token(authorization)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>
+INFO:     127.0.0.1:57775 - "POST /api/v1/auth/register HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 110, in verify_clerk_token
+    except Exception as e:
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f4e1' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\protocols\http\httptools_impl.py", line 419, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\middleware\proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 762, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 782, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 158, in register_user
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 116, in verify_clerk_token
+    clerk_auth = await verify_clerk_token(authorization)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>
+INFO:     127.0.0.1:60756 - "GET /api/v1/progress/dashboard HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 110, in verify_clerk_token
+    except Exception as e:
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f4e1' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\protocols\http\httptools_impl.py", line 419, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\middleware\proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 762, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 782, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 285, in app
+    raise e
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 275, in app
+    solved_result = await solve_dependencies(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\dependencies\utils.py", line 598, in solve_dependencies
+    solved = await call(**sub_values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 122, in get_current_user
+    # 2. Not found or missing details? Fetch from Clerk API
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 116, in verify_clerk_token
+    clerk_auth = await verify_clerk_token(authorization)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>
+INFO:     127.0.0.1:59505 - "POST /api/v1/auth/register HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 110, in verify_clerk_token
+    except Exception as e:
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f4e1' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\protocols\http\httptools_impl.py", line 419, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\middleware\proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 762, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 782, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 158, in register_user
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 116, in verify_clerk_token
+    clerk_auth = await verify_clerk_token(authorization)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>
+INFO:     127.0.0.1:52534 - "GET /api/v1/progress/dashboard HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 110, in verify_clerk_token
+    except Exception as e:
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f4e1' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\protocols\http\httptools_impl.py", line 419, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\middleware\proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 762, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 782, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 285, in app
+    raise e
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 275, in app
+    solved_result = await solve_dependencies(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\dependencies\utils.py", line 598, in solve_dependencies
+    solved = await call(**sub_values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 122, in get_current_user
+    # 2. Not found or missing details? Fetch from Clerk API
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 116, in verify_clerk_token
+    clerk_auth = await verify_clerk_token(authorization)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>
+INFO:     127.0.0.1:50482 - "GET /api/v1/auth/me HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 110, in verify_clerk_token
+    except Exception as e:
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f4e1' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\protocols\http\httptools_impl.py", line 419, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\middleware\proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 762, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 782, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 285, in app
+    raise e
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 275, in app
+    solved_result = await solve_dependencies(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\dependencies\utils.py", line 598, in solve_dependencies
+    solved = await call(**sub_values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 122, in get_current_user
+    # 2. Not found or missing details? Fetch from Clerk API
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 116, in verify_clerk_token
+    clerk_auth = await verify_clerk_token(authorization)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>
+INFO:     127.0.0.1:54703 - "POST /api/v1/auth/register HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 110, in verify_clerk_token
+    except Exception as e:
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f4e1' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\protocols\http\httptools_impl.py", line 419, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\uvicorn\middleware\proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 762, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 782, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\starlette\routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 158, in register_user
+  File "C:\Users\YASHWANTH M GOWDA\OneDrive\Desktop\Smart-Shiksha\backend\app\routers\auth.py", line 116, in verify_clerk_token
+    clerk_auth = await verify_clerk_token(authorization)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>

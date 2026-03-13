@@ -93,16 +93,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           <nav className="space-y-1 flex-1">
             {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setSidebarOpen(false)}
-                className={`sidebar-link ${pathname === item.href ? "active" : ""}`}
-              >
-                <item.icon className="w-5 h-5" />
-                <span>{t(item.key)}</span>
-              </Link>
-            ))}
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`sidebar-link ${pathname === item.href ? "active" : ""}`}
+                >
+                  <item.icon className="w-5 h-5" />
+                  <span>{t(item.key)}</span>
+                </Link>
+              ))}
           </nav>
 
           {/* Bottom section */}

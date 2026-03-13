@@ -18,6 +18,17 @@ def get_llm():
     )
 
 
+def get_llm_exam():
+    """Get LangChain Groq LLM with higher token limit for exam generation."""
+    return ChatGroq(
+        api_key=settings.GROQ_API_KEY,
+        model_name=settings.GROQ_MODEL,
+        temperature=0.7,
+        max_tokens=8000,
+        request_timeout=90,
+    )
+
+
 # ── Prompt Templates ──────────────────────────────────────────────────
 
 TUTOR_SYSTEM_PROMPT = """You are a friendly, patient, and encouraging teacher named "Shiksha AI" helping students learn.
@@ -201,7 +212,7 @@ async def generate_exam_questions(
     test_type: str = "Chapter Test",
 ) -> str:
     """Generate exam questions using AI with retry logic."""
-    llm = get_llm()
+    llm = get_llm_exam()
     import asyncio
     import time
 
@@ -268,9 +279,7 @@ async def generate_topic_content(
     """Generate detailed topic content (explanation and examples) using AI."""
     llm = get_llm()
     
-    system_prompt = """You are an expert Indian teacher named "Shiksha AI" creating educational content for Class {student_class} students.
-YOUR ROLE:
-1. Explain concepts simply for students in rural India.
+    system_prompt = """You are an expert In1. Explain concepts simply for students in rural India.
 2. Use real-world Indian examples (farming, village life, common tools).
 3. Use plain text only. NO markdown, NO #, NO **, NO bold.
 4. Output MUST be valid JSON."""
@@ -284,17 +293,28 @@ YOUR ROLE:
 
 REQUIRED JSON FORMAT (return ONLY this JSON):
 {{
-  "explanation": "Detailed explanation using numbered steps and simple paragraphs. MINIMUM 150 words.",
+  "explanation": "A highly detailed, structured point-wise explanation organized under clear section headings. Follow the EXPLANATION FORMAT RULES below strictly.",
   "examples": "Provide exactly 3 real-world Indian context examples with step-by-step solutions. MINIMUM 100 words per example."
 }}
 
-IMPORTANT: 
+EXPLANATION FORMAT RULES (VERY IMPORTANT):
+- Start with a one-line definition of the topic.
+- Organize the content into clear sections using plain text headings like: Definition, Key Concepts, Core Mechanisms, Formulas (if any), and Important Points to Remember.
+- Use a colon after each heading.
+- Under EVERY heading, write content exclusively as numbered points (1. 2. 3. etc).
+- EACH numbered point must be a single, concise sentence or a single fact. Do NOT write paragraphs anywhere.
+- Provide a deep dive into the topic. Include at least 15 to 20 distinct numbered points across all your sections.
+- Use simple language that a rural Indian student can easily understand.
+- Use the literal string '\\n' (backslash followed by n) to separate sections and points inside the JSON string. Do NOT use actual unescaped newlines.
+- NO paragraphs allowed. Only headings and bullet/numbered points.
+
+IMPORTANT JSON RULES: 
 - DO NOT use markdown symbols (#, **, etc.).
 - Use double quotes for JSON keys and values.
-- Escape any double quotes inside the text with a backslash (\").
+- Escape any double quotes inside the text with a backslash (\\").
 - DO NOT use placeholders like "coming soon" or "heavy load".
-- Return ONLY the JSON object.
-- If topic is for Class 11, ensure the depth is appropriate for Class 11 {subject}."""
+- Return ONLY the raw JSON object.
+- If topic is for Class 11, ensure the depth is highly appropriate for Class 11 {subject}."""
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
