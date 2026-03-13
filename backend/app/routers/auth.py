@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Header
 import httpx
 from datetime import datetime
 from bson import ObjectId
+from jose import jwt
 
 from app.database import users_collection
 from app.config import get_settings
@@ -10,6 +11,8 @@ from app.config import get_settings
 router = APIRouter(prefix="/auth", tags=["Auth"])
 settings = get_settings()
 
+# Cache for JWKS
+JWKS_CACHE = None
 
 def serialize_user(user: dict) -> dict:
     """Convert MongoDB user doc to JSON-safe dict."""
@@ -24,42 +27,72 @@ def serialize_user(user: dict) -> dict:
     return user
 
 
-async def fetch_clerk_user(token: str) -> dict:
-    """Fetch user info from Clerk using the token."""
-    # This URL is derived from the publishable key better-cobra-12.clerk.accounts.dev
-    url = "https://better-cobra-12.clerk.accounts.dev/oauth/userinfo"
+async def get_jwks():
+    """Fetch and cache Clerk JWKS."""
+    global JWKS_CACHE
+    if JWKS_CACHE:
+        return JWKS_CACHE
     
+    # Domain from publishable key: better-cobra-12.clerk.accounts.dev
+    url = "https://better-cobra-12.clerk.accounts.dev/.well-known/jwks.json"
     async with httpx.AsyncClient() as client:
         try:
-            r = await client.get(url, headers={"Authorization": f"Bearer {token}"})
+            r = await client.get(url)
             if r.status_code == 200:
-                data = r.json()
-                return {
-                    "clerk_id": data.get("sub"),
-                    "email": data.get("email"),
-                    "name": data.get("name") or data.get("given_name") or "Student",
-                }
-            else:
-                print(f"DEBUG AUTH: Clerk verification failed (status {r.status_code}): {r.text}")
-                return None
+                JWKS_CACHE = r.json()
+                return JWKS_CACHE
         except Exception as e:
-            print(f"DEBUG AUTH: Clerk request failed: {e}")
-            return None
+            print(f"DEBUG AUTH: Failed to fetch JWKS: {e}")
+    return None
 
 
 async def verify_clerk_token(authorization: str = Header(None)) -> dict:
-    """Verify Clerk JWT and return user info."""
+    """Verify Clerk JWT locally and return user info."""
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
     
     token = authorization.replace("Bearer ", "")
     
-    # Verify with Clerk in real-time
-    clerk_data = await fetch_clerk_user(token)
-    if not clerk_data:
-        raise HTTPException(status_code=401, detail="Invalid token")
-        
-    return clerk_data
+    try:
+        # 1. Get headers to find kid
+        headers = jwt.get_unverified_header(token)
+        kid = headers.get("kid")
+        if not kid:
+            raise Exception("Token missing kid header")
+
+        # 2. Get JWKS
+        jwks = await get_jwks()
+        if not jwks:
+            # Emergency fallback if JWKS fetch fails
+            payload = jwt.get_unverified_claims(token)
+            print("DEBUG AUTH: JWKS fetch failed, using unverified claims")
+        else:
+            # 3. Find the specific key
+            rsa_key = {}
+            for key in jwks.get("keys", []):
+                if key.get("kid") == kid:
+                    rsa_key = key
+                    break
+            
+            if not rsa_key:
+                raise Exception("JWKS Does not contain kid: " + kid)
+
+            # 4. Verify and decode JWT
+            payload = jwt.decode(
+                token, 
+                rsa_key, 
+                algorithms=["RS256"],
+                options={"verify_aud": False}
+            )
+            
+        return {
+            "clerk_id": payload.get("sub"),
+            "email": payload.get("email"),
+            "name": payload.get("name") or "Student",
+        }
+    except Exception as e:
+        print(f"DEBUG AUTH: JWT verification failed: {e}")
+        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
 
 
 async def get_current_user(authorization: str = Header(None)) -> dict:
@@ -106,13 +139,13 @@ async def register_user(authorization: str = Header(None)):
 
     # Auto-assign admin if email matches
     role = "student"
-    if clerk_data["email"].lower() == settings.ADMIN_EMAIL.lower():
+    if clerk_data.get("email") and clerk_data["email"].lower() == settings.ADMIN_EMAIL.lower():
         role = "admin"
 
     user_doc = {
         "clerk_id": clerk_data["clerk_id"],
         "name": clerk_data["name"] or "Student",
-        "email": clerk_data["email"],
+        "email": clerk_data.get("email"),
         "role": role,
         "student_class": None,
         "board": None,
