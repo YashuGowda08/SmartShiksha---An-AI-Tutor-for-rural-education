@@ -14,7 +14,7 @@ def get_llm():
         model_name=settings.GROQ_MODEL,
         temperature=0.7,
         max_tokens=2048,
-        request_timeout=20,
+        request_timeout=60,
     )
 
 
