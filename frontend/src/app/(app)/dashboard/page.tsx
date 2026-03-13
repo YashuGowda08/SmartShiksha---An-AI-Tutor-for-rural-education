@@ -21,7 +21,12 @@ interface DashboardData {
   tests_taken: number;
   average_score: number;
   total_study_time_hours: number;
-  subject_progress: Record<string, { completed: number; total: number; percentage: number }>;
+  subject_progress: Record<string, { 
+    completed: number; 
+    total: number; 
+    percentage: number;
+    average_test_score: number;
+  }>;
   recent_scores: Array<{ test_id: string; score: number; percentage: number; date: string }>;
   recommended_topics: Array<{ topic_id: string; name: string; score: number }>;
 }
