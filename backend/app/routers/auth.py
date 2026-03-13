@@ -33,7 +33,6 @@ async def get_jwks():
     if JWKS_CACHE:
         return JWKS_CACHE
     
-    # Domain from publishable key
     url = "https://better-cobra-12.clerk.accounts.dev/.well-known/jwks.json"
     async with httpx.AsyncClient() as client:
         try:
@@ -42,7 +41,7 @@ async def get_jwks():
                 JWKS_CACHE = r.json()
                 return JWKS_CACHE
         except Exception as e:
-            print(f"DEBUG AUTH: Failed to fetch JWKS: {e}")
+            print(f"Auth Error: Failed to fetch JWKS: {e}")
     return None
 
 
@@ -69,10 +68,8 @@ async def fetch_clerk_user_details(clerk_id: str) -> dict:
                     "name": f"{data.get('first_name', '')} {data.get('last_name', '')}".strip() or "Student",
                     "image_url": data.get("image_url")
                 }
-            else:
-                print(f"DEBUG AUTH: Clerk API failed ({r.status_code}): {r.text}")
         except Exception as e:
-            print(f"DEBUG AUTH: Clerk API request failed: {e}")
+            print(f"Auth Error: Clerk API request failed: {e}")
     return None
 
 
@@ -94,7 +91,6 @@ async def verify_clerk_token(authorization: str = Header(None)) -> dict:
         jwks = await get_jwks()
         if not jwks:
             payload = jwt.get_unverified_claims(token)
-            print("🚨 DEBUG AUTH: Using unverified claims (JWKS failed)")
         else:
             rsa_key = next((k for k in jwks["keys"] if k["kid"] == kid), None)
             if not rsa_key:
@@ -107,13 +103,11 @@ async def verify_clerk_token(authorization: str = Header(None)) -> dict:
                 options={"verify_aud": False}
             )
             
-        print(f"📡 DEBUG AUTH: JWT Verified. Clerk ID: {payload.get('sub')}")
         return {
             "clerk_id": payload.get("sub"),
             "name": payload.get("name") or "Student",
         }
     except Exception as e:
-        print(f"❌ DEBUG AUTH: JWT Verification Error: {e}")
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
 
 
@@ -124,38 +118,30 @@ async def get_current_user(authorization: str = Header(None)) -> dict:
     
     # 1. Try finding by clerk_id
     user = await users_collection.find_one({"clerk_id": clerk_id})
-    if user:
-        print(f"✅ DEBUG DB: User found by clerk_id: {clerk_id} (Email: {user.get('email')}, Role: {user.get('role')})")
-    else:
-        # 2. Not found by clerk_id, fetch from Clerk API to get email
-        print(f"🔍 DEBUG DB: User {clerk_id} not found by ID. Fetching Clerk details...")
+    
+    # 2. Not found or missing details? Fetch from Clerk API
+    if not user:
         clerk_details = await fetch_clerk_user_details(clerk_id)
         if not clerk_details:
             raise HTTPException(status_code=401, detail="Could not verify user identity via Clerk")
 
-        print(f"📬 DEBUG DB: Clerk Details - Email: {clerk_details.get('email')}, Name: {clerk_details.get('name')}")
-
-        # 3. Try finding by email
+        # Sync by email
         if clerk_details.get("email"):
             user = await users_collection.find_one({"email": clerk_details["email"]})
             if user:
-                # Update with clerk_id for future faster lookups
                 await users_collection.update_one(
                     {"_id": user["_id"]},
                     {"$set": {"clerk_id": clerk_id}}
                 )
-                print(f"🔗 DEBUG DB: Linked clerk_id {clerk_id} to email {clerk_details['email']}")
         
     if not user:
-        print(f"🚫 DEBUG DB: User {clerk_id} NOT FOUND in database.")
         raise HTTPException(status_code=404, detail="User not found in database. Please register.")
 
-    # 4. CRITICAL: Enforce Admin Role by Email (Ensures Admin access even if DB is out of sync)
+    # 3. Enforce Admin Role by Email (Ensures Admin access even if DB is out of sync)
     if user.get("email") and user["email"].lower() == settings.ADMIN_EMAIL.lower():
         if user.get("role") != "admin":
             await users_collection.update_one({"_id": user["_id"]}, {"$set": {"role": "admin"}})
             user["role"] = "admin"
-            print(f"🛡️ DEBUG DB: Corrected role to ADMIN for {user['email']}")
         
     return serialize_user(user)
 
@@ -166,12 +152,10 @@ async def register_user(authorization: str = Header(None)):
     clerk_auth = await verify_clerk_token(authorization)
     clerk_id = clerk_auth["clerk_id"]
 
-    # Fetch full details from Clerk
     clerk_details = await fetch_clerk_user_details(clerk_id)
     if not clerk_details:
         raise HTTPException(status_code=401, detail="Could not fetch user info from Clerk")
 
-    # Check existence
     existing = await users_collection.find_one({
         "$or": [
             {"clerk_id": clerk_id},
@@ -187,7 +171,6 @@ async def register_user(authorization: str = Header(None)):
             )
         return serialize_user(existing)
 
-    # Determine role
     role = "student"
     if clerk_details["email"] and clerk_details["email"].lower() == settings.ADMIN_EMAIL.lower():
         role = "admin"
