@@ -144,21 +144,27 @@ async def get_topic(topic_id: str, language: str = "English"):
     subject = await subjects_collection.find_one({"_id": ObjectId(chapter["subject_id"])})
 
     # If explanation OR examples are missing/placeholders, generate them dynamically
-    explanation = topic.get("explanation", "")
-    examples = topic.get("examples", "")
+    explanation = topic.get("explanation", "") or ""
+    examples = topic.get("examples", "") or ""
+    
+    # Strip any extra whitespace
+    explanation_clean = explanation.strip().lower()
+    examples_clean = examples.strip().lower()
+    
+    print(f"[DEBUG-CONTENT] Checking topic: {topic.get('name')}")
+    print(f"[DEBUG-CONTENT] Explanation (len {len(explanation)}): '{explanation[:50]}...'")
+    
+    placeholders = ["coming soon", "heavy load", "being prepared", "no examples could be generated"]
     
     should_generate = (
         not explanation or 
-        explanation == "Detailed content coming soon..." or 
-        "heavy load" in explanation.lower() or
+        any(p in explanation_clean for p in placeholders) or
         not examples or 
-        examples == "Example problems coming soon..." or
-        "no examples could be generated" in examples.lower() or
-        "being prepared" in examples.lower()
+        any(p in examples_clean for p in placeholders)
     )
 
     if should_generate:
-        print(f"[CONTENT] Generating missing content for topic: {topic.get('name')}")
+        print(f"[CONTENT] TRIGGERED generation for topic: {topic.get('name')}")
         content = await generate_topic_content(
             student_class=chapter.get("student_class", "10"),
             subject=subject.get("name", "General"),
@@ -166,8 +172,14 @@ async def get_topic(topic_id: str, language: str = "English"):
             topic=topic.get("name", "General"),
             language=language
         )
-        # Update DB ONLY if we got real content (not the "heavy load" fallback)
-        if content and "heavy load" not in content.get("explanation", "").lower():
+        # Update DB ONLY if we got real content
+        content_expl = content.get("explanation", "").lower()
+        content_examp = content.get("examples", "").lower()
+        
+        is_fallback = any(p in content_expl for p in placeholders) or any(p in content_examp for p in placeholders)
+        
+        if content and not is_fallback:
+            print(f"[CONTENT] SUCCESS: Saving real content for topic: {topic.get('name')}")
             await topics_collection.update_one(
                 {"_id": ObjectId(topic_id)},
                 {"$set": {
@@ -178,7 +190,9 @@ async def get_topic(topic_id: str, language: str = "English"):
             )
             topic.update(content)
         else:
-            # Return fallback to user but don't save to DB
+            print(f"[CONTENT] FAILURE: AI returned a fallback/placeholder. NOT saving to DB.")
+            # Return current content (which might be the fallback we just generated) to user
+            # but we don't save it, so the next refresh triggers again.
             topic.update(content)
 
     response_data = serialize_doc(topic)
