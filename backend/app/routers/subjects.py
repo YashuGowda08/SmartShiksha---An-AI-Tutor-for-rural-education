@@ -166,16 +166,20 @@ async def get_topic(topic_id: str, language: str = "English"):
             topic=topic.get("name", "General"),
             language=language
         )
-        # Update DB
-        await topics_collection.update_one(
-            {"_id": ObjectId(topic_id)},
-            {"$set": {
-                "explanation": content.get("explanation", ""),
-                "examples": content.get("examples", ""),
-                "updated_at": datetime.utcnow()
-            }}
-        )
-        topic.update(content)
+        # Update DB ONLY if we got real content (not the "heavy load" fallback)
+        if content and "heavy load" not in content.get("explanation", "").lower():
+            await topics_collection.update_one(
+                {"_id": ObjectId(topic_id)},
+                {"$set": {
+                    "explanation": content.get("explanation", ""),
+                    "examples": content.get("examples", ""),
+                    "updated_at": datetime.utcnow()
+                }}
+            )
+            topic.update(content)
+        else:
+            # Return fallback to user but don't save to DB
+            topic.update(content)
 
     response_data = serialize_doc(topic)
     response_data["student_class"] = chapter.get("student_class", "Unknown")

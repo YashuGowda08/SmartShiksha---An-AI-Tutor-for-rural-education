@@ -295,12 +295,13 @@ Respond in {language}."""
     import json
     import re
     
-    max_retries = 3
-    retry_delay = 2
+    max_retries = 5
+    retry_delay = 3
     last_error = None
     
     for attempt in range(max_retries):
         try:
+            print(f"[AI-CONTENT] Generating for {topic} (Attempt {attempt+1}/{max_retries})...")
             response = await chain.ainvoke({
                 "student_class": student_class,
                 "subject": subject,
