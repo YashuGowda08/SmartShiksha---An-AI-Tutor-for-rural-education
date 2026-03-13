@@ -24,29 +24,42 @@ def serialize_user(user: dict) -> dict:
     return user
 
 
+async def fetch_clerk_user(token: str) -> dict:
+    """Fetch user info from Clerk using the token."""
+    # This URL is derived from the publishable key better-cobra-12.clerk.accounts.dev
+    url = "https://better-cobra-12.clerk.accounts.dev/oauth/userinfo"
+    
+    async with httpx.AsyncClient() as client:
+        try:
+            r = await client.get(url, headers={"Authorization": f"Bearer {token}"})
+            if r.status_code == 200:
+                data = r.json()
+                return {
+                    "clerk_id": data.get("sub"),
+                    "email": data.get("email"),
+                    "name": data.get("name") or data.get("given_name") or "Student",
+                }
+            else:
+                print(f"DEBUG AUTH: Clerk verification failed (status {r.status_code}): {r.text}")
+                return None
+        except Exception as e:
+            print(f"DEBUG AUTH: Clerk request failed: {e}")
+            return None
+
+
 async def verify_clerk_token(authorization: str = Header(None)) -> dict:
     """Verify Clerk JWT and return user info."""
-    auth_str = str(authorization) if authorization else "NONE"
-    print(f"DEBUG AUTH: Header received: {auth_str[:50]}... (len: {len(auth_str)})")
-    
     if not authorization or not authorization.startswith("Bearer "):
-        print("DEBUG AUTH: Rejecting - Missing or invalid Bearer header")
         raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
     
     token = authorization.replace("Bearer ", "")
     
-    # 🚨 EMERGENCY BYPASS FOR ADMIN 🚨
-    # If the token is there, we trust it locally for the admin email to keep things moving
-    if len(token) > 10:
-        print(f"DEBUG AUTH: Applying emergency bypass (token len: {len(token)})")
-        return {
-            "clerk_id": "clerk_admin_yash_v1",
-            "email": "yashugowda8102005@gmail.com",
-            "name": "Yashwanth (Admin)",
-        }
-
-    print("DEBUG AUTH: Token too short, rejecting")
-    raise HTTPException(status_code=401, detail="Invalid token")
+    # Verify with Clerk in real-time
+    clerk_data = await fetch_clerk_user(token)
+    if not clerk_data:
+        raise HTTPException(status_code=401, detail="Invalid token")
+        
+    return clerk_data
 
 
 async def get_current_user(authorization: str = Header(None)) -> dict:
