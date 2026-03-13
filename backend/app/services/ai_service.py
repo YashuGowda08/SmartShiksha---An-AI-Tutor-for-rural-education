@@ -268,22 +268,33 @@ async def generate_topic_content(
     """Generate detailed topic content (explanation and examples) using AI."""
     llm = get_llm()
     
-    system_prompt = "You are a specialized educational content creator. Respond with valid JSON only."
-    human_prompt = """Generate a detailed educational guide for:
-- Class: {student_class}
+    system_prompt = """You are an expert Indian teacher named "Shiksha AI" creating educational content for Class {student_class} students.
+YOUR ROLE:
+1. Explain concepts simply for students in rural India.
+2. Use real-world Indian examples (farming, village life, common tools).
+3. Use plain text only. NO markdown, NO #, NO **, NO bold.
+4. Output MUST be valid JSON."""
+
+    human_prompt = """Generate detailed learning content for:
 - Subject: {subject}
 - Chapter: {chapter}
 - Topic: {topic}
+- Class: {student_class}
+- Language: {language}
 
-Provide the response in the following JSON format:
+REQUIRED JSON FORMAT (return ONLY this JSON):
 {{
-  "explanation": "Clear and detailed explanation of the concept. Use simple paragraphs and numbered steps. No markdown special characters like # or **.",
-  "examples": "Provide at least 3 real-world examples with step-by-step solutions suitable for this class level. DO NOT use placeholders like 'coming soon'. Use plain text only without markdown symbols (#, **)."
+  "explanation": "Detailed explanation using numbered steps and simple paragraphs. MINIMUM 150 words.",
+  "examples": "Provide exactly 3 real-world Indian context examples with step-by-step solutions. MINIMUM 100 words per example."
 }}
 
-Explain clearly for a Class {student_class} student. Use Indian context examples. 
-IMPORTANT: Use absolute plain text only for the field values. DO NOT use markdown headers (#), bolding (**), or lists (-). Use simple paragraphs and numbered steps (1., 2., etc.) if needed.
-Respond in {language}."""
+IMPORTANT: 
+- DO NOT use markdown symbols (#, **, etc.).
+- Use double quotes for JSON keys and values.
+- Escape any double quotes inside the text with a backslash (\").
+- DO NOT use placeholders like "coming soon" or "heavy load".
+- Return ONLY the JSON object.
+- If topic is for Class 11, ensure the depth is appropriate for Class 11 {subject}."""
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
@@ -324,7 +335,19 @@ Respond in {language}."""
                 if json_match:
                     content = json_match.group(0)
 
-            parsed = json.loads(content)
+            # CLEANUP: Remove trailing commas before closing braces/brackets (common LLM error)
+            content = re.sub(r',\s*\}', '}', content)
+            content = re.sub(r',\s*\]', ']', content)
+            
+            # CLEANUP: Remove potential invalid control characters
+            content = "".join(char for char in content if ord(char) >= 32 or char in "\n\r\t")
+
+            try:
+                parsed = json.loads(content)
+            except json.JSONDecodeError as je:
+                print(f"[AI-CONTENT] JSON Parse Error: {je}")
+                print(f"[AI-CONTENT] Raw Content Sample: {content[:200]}...")
+                raise je
             
             # Crucial check: make sure we didn't get "coming soon" in the JSON itself
             expl = parsed.get("explanation", "")
@@ -342,7 +365,8 @@ Respond in {language}."""
                 await asyncio.sleep(retry_delay)
                 retry_delay *= 2
                 continue
-            # For other errors (JSON parse, placeholders), wait briefly and retry
+            # Wait briefly and retry
+            await asyncio.sleep(1)
             await asyncio.sleep(1)
             continue
             

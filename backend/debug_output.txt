@@ -1,0 +1,18 @@
+C:\Users\YASHWANTH M GOWDA\AppData\Roaming\Python\Python312\site-packages\requests\__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.0.1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+DEBUG: Using Model: llama-3.1-70b-versatile
+DEBUG: Key ends with: ...Tn7gy
+[AI-CONTENT] Generating for Introduction to Encoding Schemes (Attempt 1/5)...
+[AI-CONTENT] Attempt 1 failed: 'Input to ChatPromptTemplate is missing variables {\'\\n  "explanation"\'}.  Expected: [\'\\n  "explanation"\'] Received: [\'student_class\', \'subject\', \'chapter\', \'topic\', \'language\']'
+[AI-CONTENT] Generating for Introduction to Encoding Schemes (Attempt 2/5)...
+[AI-CONTENT] Attempt 2 failed: 'Input to ChatPromptTemplate is missing variables {\'\\n  "explanation"\'}.  Expected: [\'\\n  "explanation"\'] Received: [\'student_class\', \'subject\', \'chapter\', \'topic\', \'language\']'
+[AI-CONTENT] Generating for Introduction to Encoding Schemes (Attempt 3/5)...
+[AI-CONTENT] Attempt 3 failed: 'Input to ChatPromptTemplate is missing variables {\'\\n  "explanation"\'}.  Expected: [\'\\n  "explanation"\'] Received: [\'student_class\', \'subject\', \'chapter\', \'topic\', \'language\']'
+[AI-CONTENT] Generating for Introduction to Encoding Schemes (Attempt 4/5)...
+[AI-CONTENT] Attempt 4 failed: 'Input to ChatPromptTemplate is missing variables {\'\\n  "explanation"\'}.  Expected: [\'\\n  "explanation"\'] Received: [\'student_class\', \'subject\', \'chapter\', \'topic\', \'language\']'
+[AI-CONTENT] Generating for Introduction to Encoding Schemes (Attempt 5/5)...
+[AI-CONTENT] Attempt 5 failed: 'Input to ChatPromptTemplate is missing variables {\'\\n  "explanation"\'}.  Expected: [\'\\n  "explanation"\'] Received: [\'student_class\', \'subject\', \'chapter\', \'topic\', \'language\']'
+[AI-CONTENT] All attempts failed for topic Introduction to Encoding Schemes. Final error: 'Input to ChatPromptTemplate is missing variables {\'\\n  "explanation"\'}.  Expected: [\'\\n  "explanation"\'] Received: [\'student_class\', \'subject\', \'chapter\', \'topic\', \'language\']'
+--- GENERATION RESULT ---
+Explanation Preview: Content generation is currently under heavy load. Please refresh the page in a moment to try again.
+Is Fallback? True
